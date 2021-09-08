@@ -7,9 +7,9 @@
 
 
 ## Usage
-Unzip mappers.zip and move to ./data/enem_data/mappers/.
-
-Modify the config file in "./configs/" to fit on your environment.
+- Unzip mappers.zip and move to "./data/enem_data/mappers/".
+- Move enem_dep.csv to "./data/enem_data/".
+- Modify the config file in "./configs/" to fit on your environment.
 ### Snapshot Models
 python snap_trainer.py
 ### Sequential Models
