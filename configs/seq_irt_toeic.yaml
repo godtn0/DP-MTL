@@ -1,0 +1,54 @@
+train:
+    lr: 0.02
+    max_epochs: 100
+    score_data: true
+    model: 'lstm' # [multic, ncf]
+    early_stopping: true
+    mixer_lambda: 0.1
+    kt_only: false
+    num_d: 4
+    num_opt: 4
+    weight_decay: false
+    weight_decaying_lambda: 0.001
+    random_seed: 1
+    num_layers: 1
+ncf:
+    num_d: 4
+    hidden_dim: 4
+    num_layers: 3
+    out_dim: 1
+early_stopping:
+    patience: 10
+evaluate:
+    batch_size: 74000
+    epochs: 100
+score:
+    pre_transform_opt: "Recent"
+    loss: bce
+    split:
+        - 0.75
+        - 0.25
+factor: 1
+gpus: '1'
+batch_size: 100
+epochs: 200
+num_workers: 16
+num_q: 185
+split: true
+type: 'mix' #['sp', 'mix']
+version: 3
+data:
+    dataset_type: "toeic"
+    seq: true
+    pad: true
+    demo: false
+    drop_ratio: 0.2
+    drop_seed: 0
+    version: '25' # ["10", "25", "50", "100"]
+    root: "/root/data/toeic_data"
+    mapper: "/root/data/toeic_data/mappers"
+    max_seq_len: 300
+    split:
+        mix:
+            - 0.1
+            - 0.1
