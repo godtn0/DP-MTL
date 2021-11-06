@@ -64,13 +64,13 @@ class PadUptoEnd:
     def __init__(
         self,
         max_seq: int,
-        pad_value_dict: Optional[Dict[str, Any]] = None,
+        pad_value_dict=None,
     ):
         """Initialization PadUptoEnd with max_seq and pad_value_dict"""
         self.max_seq = max_seq
         self.pad_value_dict = pad_value_dict
 
-    def __call__(self, sample: np.ndarray) -> Dict[str, Any]:
+    def __call__(self, sample: np.ndarray):
         """Do pad_upto_end
         and convert input into Dict[str, Any] from numpy structured ndarray.
         It will also generate "pad_mask" & "sequence_size"
@@ -90,11 +90,12 @@ class PadUptoEnd:
         sample = _pad_upto_end(sample, self.max_seq, pad_value_dict=self.pad_value_dict)
         return sample
 
+
 def _pad_upto_end(
-    sample: Union[np.ndarray, dict],
-    max_seq: int,
-    pad_value_dict: dict,
-    return_type: type = dict,
+    sample,
+    max_seq,
+    pad_value_dict,
+    return_type=dict,
 ):
     """pad upto end"""
     if isinstance(sample, np.ndarray) and len(sample.shape) == 1:
@@ -134,6 +135,7 @@ def _pad_upto_end(
             constant_values=pad_value,
         )
     return res
+
 
 def convert_to_dictofndarray(inputs):
     dict_of_ndarray = {}

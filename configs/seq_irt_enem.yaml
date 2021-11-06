@@ -41,11 +41,11 @@ data:
     dataset_type: "enem"
     seq: true
     pad: true
-    demo: false
+    demo: true
     drop_ratio: 0.2
     drop_seed: 0
-    root: "/root/data/enem_data"
-    mapper: "/root/data/enem_data/mappers"
+    root: "/root/imsi/DP-MTL/data/enem_data"
+    mapper: "/root/imsi/DP-MTL/data/enem_data/mappers"
     split:
         sp:
             - 0.9

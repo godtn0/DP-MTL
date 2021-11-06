@@ -238,7 +238,7 @@ class IRTTrainer:
             train_logits = []
             train_sans = []
             train_user_choices = []
-            for data in self.irt_dataloaders["train"]:
+            for data in tqdm(self.irt_dataloaders["train"]):
                 train_logs = self._train_step(data)
                 train_losses.append(train_logs["loss"])
                 train_kt_losses.append(train_logs["kt_loss"])
@@ -255,7 +255,6 @@ class IRTTrainer:
             train_compare = np.where(train_choices_logits == train_user_choices, 1, 0)
             train_ct_correct = np.count_nonzero(train_compare)
             logs["train_ct_acc"] = train_ct_correct / len(train_compare)
-
             fpr, tpr, thresholds = metrics.roc_curve(
                 train_sans, train_probs, pos_label=1
             )
@@ -297,6 +296,7 @@ class IRTTrainer:
                     early_stop_auc = self.early_stopping_auc.early_stop
                 if early_stop_loss and early_stop_auc:
                     break
+            print(logs)
 
     def _train_step(self, data, model=None, optimizer=None):
         if model is None:
@@ -345,7 +345,7 @@ class IRTTrainer:
                     torch.load(self.early_stopping_loss.best_model_path)
                 )
                 if self.cfg.data.split.mix[1] > 0:
-                    test_logs = self._evaluate_ct(self.irt_dataloaders["train"])
+                    test_logs = self._evaluate_ct(self.irt_dataloaders["test"])
                     key_list = list(test_logs.keys())
                     for key in key_list:
                         test_logs["eval/test_" + key] = test_logs.pop(key)
@@ -356,7 +356,7 @@ class IRTTrainer:
                     torch.load(self.early_stopping_auc.best_model_path)
                 )
                 if self.cfg.data.split.mix[1] > 0:
-                    test_logs = self._evaluate_ct(self.irt_dataloaders["train"])
+                    test_logs = self._evaluate_ct(self.irt_dataloaders["test"])
                     key_list = list(test_logs.keys())
                     for key in key_list:
                         test_logs["eval/test_" + key + "_fa"] = test_logs.pop(key)
@@ -364,7 +364,7 @@ class IRTTrainer:
                 key_list = list(sp_logs.keys())
                 for key in key_list:
                     sp_logs[key + "_fa"] = sp_logs.pop(key)
-            
+
         return sp_logs, test_logs
 
     def _evaluate_ct(self, dataloader, model=None):
@@ -640,12 +640,11 @@ class MyPool(multiprocessing.pool.Pool):
 
 if __name__ == "__main__":
     pl.seed_everything(0)
-    root = "/root/imsi/research-poc/research_models/"
-    script_name = os.path.splitext(os.path.basename(__file__))[0]  # "run_irt"
-    model_type = "irt"
+    root = "/root/imsi/DP-MTL"
+    script_name = "snap_trainer"
     ############## dataset type is one of ["enem", "toeic"] ##############
     dataset_type = "enem"
-    cfg_file = f"sp_configs/{model_type}_{dataset_type}.yaml"
+    cfg_file = f"./irt_{dataset_type}.yaml"
     config = OmegaConf.load(os.path.join(root, "configs", cfg_file))
     config = OmegaConf.merge(config, OmegaConf.from_cli())
 

@@ -1,16 +1,15 @@
 # DP-MTL - Official PyTorch Implementation
 
-
 ## Dependencies
-- python 3.8
-- pytorch 1.4
-
+- pip install -r requirements.txt
 
 ## Usage
-- Unzip mappers.zip and move to "./data/enem_data/mappers/".
-- Move enem_dep.csv to "./data/enem_data/".
+- unzip "./data/enem_data/mappers.zip".
+- unzip "./data/enem_data/enem_dep.zip".
 - Modify the config file in "./configs/" to fit on your environment.
 ### Snapshot Models
 python snap_trainer.py
+- If you move enem_data to other dir, modify "data.root" in "./configs/irt_enem.yaml".
 ### Sequential Models
 python seq_trainer.py
+- If you move enem_data to other dir, modify "data.root" in "./configs/seq_irt_enem.yaml".

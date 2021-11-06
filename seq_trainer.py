@@ -25,7 +25,6 @@ from sklearn import linear_model
 import sklearn.metrics as metrics
 from scipy import stats
 
-import wandb
 
 from pytorch_lightning.callbacks import ModelCheckpoint
 from omegaconf.dictconfig import DictConfig
@@ -58,12 +57,13 @@ class IRTTrainer:
         elif cfg.data.dataset_type == "enem":
             import time
 
-            start = time.time()  
+            start = time.time()
             print("dataset preprocessing start...")
             self.datasets = enem_dataset(
                 cfg=cfg,
             )
-            print("time :", time.time() - start)  
+            print("time :", time.time() - start)
+        # if self.cfg.data.dataset_type == "enem":
         self.dataloaders = self._build_data_loader(self.datasets, enem_collate_fn)
         self.model = self._build_model()
         if self.cfg.train.early_stopping:
@@ -215,6 +215,7 @@ class IRTTrainer:
 
                 logs.update(best_metrics)
                 logs.update(val_mix_logs)
+            print(logs)
             if (
                 self.cfg.train.early_stopping
                 and self.cfg.type != "sp"
@@ -294,6 +295,8 @@ class IRTTrainer:
     def evaluate(self):
         if self.cfg.type == "sp":
             logs = self._evaluate_sp(test=True)
+            print("=====================only sp results=====================")
+            print(logs)
         elif self.cfg.type == "mix":
             if self.early_stopping_loss.best_model_path is not None:
                 self.model.load_state_dict(
@@ -304,7 +307,12 @@ class IRTTrainer:
                 key_list = list(test_logs.keys())
                 for key in key_list:
                     test_logs["eval/test_" + key] = test_logs.pop(key)
+                print(
+                    "=====================early stopping by loss - training kt and sp results====================="
+                )
+                print("kt results:", test_logs)
             sp_logs = self._evaluate_sp(test=True)
+            print("sp results: ", sp_logs)
 
             if self.early_stopping_auc.best_model_path is not None:
                 self.model.load_state_dict(
@@ -317,10 +325,16 @@ class IRTTrainer:
                 key_list = list(test_logs.keys())
                 for key in key_list:
                     test_logs["eval/test_" + key + "_fa"] = test_logs.pop(key)
+                print(
+                    "=====================early stopping by auc - training kt and sp results====================="
+                )
+                print("kt results:", test_logs)
             sp_logs = self._evaluate_sp(test=True)
+
             key_list = list(sp_logs.keys())
             for key in key_list:
                 sp_logs[key + "_fa"] = sp_logs.pop(key)
+            print("sp results: ", sp_logs)
 
     def _evaluate_ct(self, dataloader, test=False, model=None):
         if model is None:
@@ -525,12 +539,6 @@ class IRTTrainer:
             train_user_scores * (self.datasets["train"].std + 1e-7)
             + self.datasets["train"].mean
         )
-            {
-                "train_sklearn_mae": np.average(
-                    np.abs(train_pred_sklearn_scores - train_real_scores)
-                )
-            }
-        )
 
         pred_scores = []
         ################## evaluating score prediciton with testing dataset ##################
@@ -615,10 +623,10 @@ class MyPool(multiprocessing.pool.Pool):
 
 if __name__ == "__main__":
     pl.seed_everything(0)
-    root = "/root/imsi/research-poc/research_models/"
-    model_type = "seq_irt"
+    root = "/root/imsi/DP-MTL/"
+    model_type = "seq_trainer"
     ############## dataset type is one of ["enem", "toeic"] ##############
     dataset_type = "enem"
-    cfg_file = f"sp_configs/{model_type}_{dataset_type}.yaml"
+    cfg_file = f"./seq_irt_{dataset_type}.yaml"
     config = OmegaConf.load(os.path.join(root, "configs", cfg_file))
     train(config)
