@@ -13,3 +13,7 @@ python snap_trainer.py
 ### Sequential Models
 python seq_trainer.py
 - If you move enem_data to other dir, modify "data.root" in "./configs/seq_irt_enem.yaml".
+
+### Toeic dataset
+TOEIC score dataset has privacy issue, so we upload each versions by sparsity without score info. 
+[TOEIC data link](https://drive.google.com/file/d/1p5V4_77Jb8PPISQG5xMibzZdRK9oesvW/view?usp=sharing)
